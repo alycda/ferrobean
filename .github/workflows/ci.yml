@@ -17,6 +17,10 @@ jobs:
     - name: Set up Rust
       uses: actions-rust-lang/setup-rust-toolchain@v1
     - name: Run cargo check
-      run: cargo check
+      run: |
+        cargo check --verbose
+        echo "cargo check completed with exit code: $?"
     - name: Run cargo test
-      run: cargo test
+      run: |
+        cargo test --verbose
+        echo "cargo test completed with exit code: $?"
