@@ -1,5 +1,13 @@
 use worker::*;
 
+/// https://github.com/beancount/fava/blob/main/src/fava/helpers.py
+#[derive(Debug, PartialEq)]
+enum Helpers {
+    /// TODO: Option<Directive>, Option<Source>
+    BeancountError(&'static str),
+    FavaError(String)
+}
+
 #[event(fetch)]
 async fn fetch(
     _req: Request,
