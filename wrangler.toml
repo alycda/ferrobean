@@ -1,3 +1,5 @@
+# https://developers.cloudflare.com/workers/wrangler/configuration/
+
 name = "ferrobean"
 main = "build/index.js"
 compatibility_date = "2025-09-20"
