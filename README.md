@@ -2,6 +2,17 @@
 
 A Rust Cloudflare Worker project using the official workers-rs template.
 
+## Documentation
+
+📖 **[Read the full documentation](https://alycda.github.io/ferrobean/)**
+
+The complete documentation includes:
+- Getting started guide
+- Development workflow
+- API reference
+- Deployment instructions
+- Contributing guidelines
+
 ## Prerequisites
 
 - Rust toolchain (https://rustup.rs/)
