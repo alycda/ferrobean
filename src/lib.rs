@@ -4,9 +4,11 @@ use worker::*;
 #[derive(Debug, PartialEq)]
 enum Helpers {
     /// TODO: Option<Directive>, Option<Source>
-    BeancountError(&'static str),
+    BeancountError(String),
     FavaError(String)
 }
+
+mod beans;
 
 #[event(fetch)]
 async fn fetch(
