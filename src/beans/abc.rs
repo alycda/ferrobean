@@ -6,6 +6,12 @@ trait Amount {
     fn get_currency(&self) -> &'static str;
 }
 
+/// an amount with date and label
+trait Cost: Amount {
+    fn get_date(&self) -> time::Date;
+    fn get_label(&self) -> Option<String>;
+}
+
 /// an Entry, must have a Date
 /// 
 /// see https://beancount.github.io/docs/beancount_language_syntax.html#directives
