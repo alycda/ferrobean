@@ -1,5 +1,7 @@
 //! Abstract base classes for Beancount types
 
+use crate::beans::*;
+
 trait Amount {
     /// Number of units in the amount
     fn get_value(&self) -> isize;
@@ -21,7 +23,7 @@ pub(crate) enum Directive {
     // time::Date, Account
     Close,
     Commodity,
-    Transactions,
+    Transactions(Transaction), // , Posting
     
     // time::Date, Account, Meta(String)
     Note,
@@ -48,6 +50,14 @@ pub(crate) trait Entry {
     fn get_date(&self) -> time::Date;
     fn get_meta(&self) {
         todo!()
+    }
+}
+
+pub(crate) struct Transaction(flags::Flags);
+
+impl Transaction {
+    pub fn is_unrealized(&self) -> bool {
+        self.0 == flags::Flags::Unrealized
     }
 }
 

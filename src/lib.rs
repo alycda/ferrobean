@@ -16,10 +16,17 @@ mod core {
     mod accounts {
         // struct Accounts;
 
+        use crate::beans::abc::Directive;
+
         // impl Accounts {
-        // fn get_last_entry(postings: Vec<beans::abc::Directive>) {
-        pub(crate) fn get_last_entry(postings: Vec<impl crate::beans::abc::Entry>) -> Option<impl crate::beans::abc::Entry> {
-            postings.into_iter()//.filter(|t| !t.is_unrealized())
+        pub(crate) fn get_last_entry(postings: Vec<Directive>) -> Option<impl crate::beans::abc::Entry> {
+            postings.into_iter()
+                .filter(|entry| {
+                    match entry {
+                        Directive::Transactions(t,) => !t.is_unrealized(),
+                        _ => true
+                    }
+                })
                 .rev().last()
         }
         // }
@@ -28,15 +35,17 @@ mod core {
     #[cfg(test)]
     mod tests {
         use super::*;
+        
+        use crate::beans::abc::Directive;
 
         #[test]
         fn empty_list() {
-            assert!(accounts::get_last_entry(Vec::<crate::beans::abc::Directive>::new()).is_none())
+            assert!(accounts::get_last_entry(Vec::<Directive>::new()).is_none())
         }
 
         #[test]
         fn single_directive() {
-            assert!(accounts::get_last_entry(vec![crate::beans::abc::Directive::Open]).is_some())
+            assert!(accounts::get_last_entry(vec![Directive::Open]).is_some())
         }
     }
 }
