@@ -23,7 +23,7 @@ pub(crate) enum Directive {
     // time::Date, Account
     Close,
     Commodity,
-    Transactions(Transaction), // , Posting
+    Transactions(Transaction, Posting),
     
     // time::Date, Account, Meta(String)
     Note,
@@ -60,6 +60,8 @@ impl Transaction {
         self.0 == flags::Flags::Unrealized
     }
 }
+
+pub(crate) struct Posting(Box<dyn Position>);
 
 /// cost and units
 trait Position {
