@@ -1,3 +1,5 @@
+//! Entry flags
+
 use crate::Helpers;
 
 /// entry flags
