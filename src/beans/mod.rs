@@ -1,11 +1,4 @@
-mod abc {
-    /// required behavior for a Directive
-    trait Entry {
-        fn get_date(&self) -> time::Date;
-        fn get_meta(&self) {
-            todo!()
-        }
-    }
-}
+//! Types, functions and wrappers for Beancount
 
+mod abc;
 mod flags;
