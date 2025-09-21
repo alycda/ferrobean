@@ -17,13 +17,14 @@ trait Cost: Amount {
 /// an Entry, must have a Date
 /// 
 /// see https://beancount.github.io/docs/beancount_language_syntax.html#directives
+#[derive(Debug, PartialEq)]
 pub(crate) enum Directive {
     // time::Date, Account
     Open,
     // time::Date, Account
     Close,
     Commodity,
-    Transactions(Transaction, Posting),
+    Transactions(Transaction), // , Posting
     
     // time::Date, Account, Meta(String)
     Note,
@@ -31,7 +32,7 @@ pub(crate) enum Directive {
     Balance,
 
     Document,
-    Custom(Box<dyn Entry>),
+    // Custom(Box<dyn Entry>),
     Budget,
 }
 
@@ -46,14 +47,15 @@ impl Entry for Directive {
 }
 
 /// required behavior for a Directive
-pub(crate) trait Entry {
+pub(crate) trait Entry: PartialEq + std::fmt::Debug {
     fn get_date(&self) -> time::Date;
     fn get_meta(&self) {
         todo!()
     }
 }
 
-pub(crate) struct Transaction(flags::Flags);
+#[derive(Debug, PartialEq)]
+pub(crate) struct Transaction(pub flags::Flags);
 
 impl Transaction {
     pub fn is_unrealized(&self) -> bool {
@@ -69,27 +71,28 @@ trait Position {
     fn get_cost(&self) -> Option<Box<dyn Cost>>;
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
 
-    #[test]
-    fn custom_directive() {
-        struct MyCustomDirective(time::Date);
+//     #[test]
+//     fn custom_directive() {
+//         #[derive(Debug, PartialEq)]
+//         struct MyCustomDirective(time::Date);
 
-        impl Default for MyCustomDirective {
-            fn default() -> Self {
-                Self(time::OffsetDateTime::now_utc().date())
-            }
-        }
+//         impl Default for MyCustomDirective {
+//             fn default() -> Self {
+//                 Self(time::OffsetDateTime::now_utc().date())
+//             }
+//         }
 
-        impl Entry for MyCustomDirective {
-            fn get_date(&self) -> time::Date {
-                self.0
-            }
-        }
+//         impl Entry for MyCustomDirective {
+//             fn get_date(&self) -> time::Date {
+//                 self.0
+//             }
+//         }
     
-        let entry = Directive::Custom(Box::new(MyCustomDirective::default()));
-        entry.get_date();
-    }
-}
+//         let entry = Directive::Custom(Box::new(MyCustomDirective::default()));
+//         entry.get_date();
+//     }
+// }
