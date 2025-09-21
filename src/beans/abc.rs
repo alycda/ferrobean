@@ -61,6 +61,12 @@ impl Transaction {
     }
 }
 
+/// cost and units
+trait Position {
+    fn get_units(&self) -> dyn Amount;
+    fn get_cost(&self) -> Option<Box<dyn Cost>>;
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
