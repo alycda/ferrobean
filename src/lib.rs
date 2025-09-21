@@ -23,7 +23,7 @@ mod core {
             postings.into_iter()
                 .filter(|entry| {
                     match entry {
-                        Directive::Transactions(t,) => !t.is_unrealized(),
+                        Directive::Transactions(t, _p) => !t.is_unrealized(),
                         _ => true
                     }
                 })
@@ -35,7 +35,7 @@ mod core {
     #[cfg(test)]
     mod tests {
         use super::*;
-        
+
         use crate::beans::abc::Directive;
 
         #[test]
