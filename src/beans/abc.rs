@@ -1,5 +1,11 @@
 //! Abstract base classes for Beancount types
 
+trait Amount {
+    /// Number of units in the amount
+    fn get_value(&self) -> isize;
+    fn get_currency(&self) -> &'static str;
+}
+
 /// an Entry, must have a Date
 /// 
 /// see https://beancount.github.io/docs/beancount_language_syntax.html#directives
