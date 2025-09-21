@@ -2,4 +2,4 @@
 
 # Install bacon for continuous testing
 setup:
-	cargo install bacon
+	cargo install --locked bacon
