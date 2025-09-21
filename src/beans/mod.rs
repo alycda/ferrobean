@@ -1,4 +1,4 @@
 //! Types, functions and wrappers for Beancount
 
-mod abc;
+pub(crate) mod abc;
 mod flags;

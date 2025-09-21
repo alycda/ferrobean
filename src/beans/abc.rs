@@ -32,7 +32,7 @@ impl Entry for Directive {
 }
 
 /// required behavior for a Directive
-trait Entry {
+pub(crate) trait Entry {
     fn get_date(&self) -> time::Date;
     fn get_meta(&self) {
         todo!()
