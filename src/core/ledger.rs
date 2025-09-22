@@ -4,6 +4,41 @@ use crate::beans::abc::Directive;
 
 struct FilteredLedger;
 
+impl FilteredLedger {
+    fn new() -> Self {
+        todo!()
+    }
+
+    /// The date to use for prices
+    fn end_date(&self) {
+
+    }
+
+    fn root_tree(&self) {
+
+    }
+
+    /// A root tree for the balance sheet
+    fn root_tree_closed(&self) {
+
+    }
+
+    /// Yield date ranges corresponding to interval boundaries
+    fn interval_ranges(&self) {
+
+    }
+
+    /// List all prices
+    fn prices(&self) {
+
+    }
+
+    fn account_is_closed(&self) -> bool {
+        todo!()
+    }
+}
+
+/// an interface for a Beancount ledger
 struct FavaLedger {
 
 }
