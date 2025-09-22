@@ -1,8 +1,10 @@
-// struct Accounts;
+//! Account close date and metadata
 
 use std::collections::HashMap;
 
 use crate::beans::abc::Directive;
+
+// struct Accounts;
 
 // impl Accounts {
 fn get_last_entry(postings: &Vec<Directive>) -> Option<&Directive> {
@@ -171,9 +173,9 @@ impl AccountDict {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
-
     use super::*;
+
+    use std::collections::HashMap;
 
     use crate::{beans::{abc::{AAmount, Directive, Transaction}, flags::Flags}, core::tree::TreeNode};
 
