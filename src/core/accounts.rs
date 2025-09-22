@@ -1,5 +1,7 @@
 // struct Accounts;
 
+use std::collections::HashMap;
+
 use crate::beans::abc::Directive;
 
 // impl Accounts {
@@ -78,6 +80,7 @@ fn balance_string(tree_node: &super::tree::TreeNode) -> String {
 struct LastEntry(time::Date, String);
 
 /// Holds information about an account
+#[derive(Default)]
 struct AccountData {
     /// The date on which this account is closed 
     close_date: Option<time::Date>,
@@ -86,9 +89,91 @@ struct AccountData {
     /// Uptodate status. Is only computed if the account has a "fava-uptodate-indication" meta attribute.
     uptodate_status: Option<Status>,
     /// Balance directive if this account has an uptodate status
-    balance_string: String,
+    balance_string: Option<String>,
     /// The last entry of the account (unless it is a close Entry)
     last_entry: Option<LastEntry>,
+}
+
+/// Account info dictionary
+#[derive(Default)]
+struct AccountDict(HashMap<String, AccountData>);
+
+// impl Default for AccountDict {
+//     /// Get the account of the given name, insert one if it is missing
+//     fn default() -> Self {
+//         Self(HashMap::new())
+//     }
+// }
+
+impl AccountDict {
+    const EMPTY: AccountData = AccountData {
+        close_date: None,
+        // meta: HashMap::new(),  // This won't work with const - see below
+        uptodate_status: None,
+        balance_string: None,
+        last_entry: None,
+    };
+
+    fn get_or_empty(&self, key: &str) -> &AccountData {
+        self.0.get(key).unwrap_or(&Self::EMPTY)
+    }
+
+    fn get_or_insert(&mut self, key: String) -> &mut AccountData {
+        self.0.entry(key).or_insert_with(AccountData::default)
+    }
+
+    fn load_file(&mut self) {
+        self.0.clear();
+
+        todo!()
+        
+        // // This will need to come from your ledger/entries system
+        // let entries_by_account = group_entries_by_account(&self.ledger.all_entries);
+        // let tree = Tree::new(&self.ledger.all_entries);
+        
+        // // Process Open entries
+        // for open_entry in &self.ledger.all_entries_by_type.open {
+        //     let meta = &open_entry.meta;
+        //     let account_data = self.get_or_insert(open_entry.account.clone());
+        //     account_data.meta = meta.clone();
+
+        //     let txn_postings = &entries_by_account[&open_entry.account];
+        //     let last = get_last_entry(txn_postings);
+            
+        //     if let Some(last_entry) = last {
+        //         if !matches!(last_entry, Directive::Close) {
+        //             account_data.last_entry = Some(LastEntry {
+        //                 date: last_entry.get_date(), // You'll need to implement this
+        //                 entry_hash: hash_entry(last_entry), // You'll need to implement this
+        //             });
+        //         }
+        //     }
+            
+        //     if meta.get("fava-uptodate-indication").is_some() {
+        //         account_data.uptodate_status = uptodate_status(txn_postings);
+        //         if account_data.uptodate_status != Some(Status::Pass) {
+        //             if let Some(tree_node) = tree.get(&open_entry.account) {
+        //                 account_data.balance_string = Some(balance_string(tree_node));
+        //             }
+        //         }
+        //     }
+        // }
+        
+        // // Process Close entries
+        // for close_entry in &self.ledger.all_entries_by_type.close {
+        //     self.get_or_insert(close_entry.account.clone()).close_date = Some(close_entry.date);
+        // }
+    }
+
+    fn all_balance_directives(&self) -> String {
+        let mut result = String::new();
+        for account_details in self.0.values() {
+            if let Some(balance_string) = &account_details.balance_string {
+                result.push_str(balance_string);
+            }
+        }
+        result
+    }
 }
 
 #[cfg(test)]
