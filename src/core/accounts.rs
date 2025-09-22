@@ -3,7 +3,7 @@
 use crate::beans::abc::Directive;
 
 // impl Accounts {
-pub(crate) fn get_last_entry(postings: &Vec<Directive>) -> Option<&Directive> {
+fn get_last_entry(postings: &Vec<Directive>) -> Option<&Directive> {
     postings.into_iter()
         .rev()                    // Start from the end  
         .find(|entry| {          // Find first match going backwards
@@ -56,13 +56,31 @@ fn uptodate_status(postings: &Vec<Directive>) -> Option<Status> {
     }
     None
 }
+
+/// Balance directive for the given account for today
+fn balance_string(tree_node: &super::tree::TreeNode) -> String {
+    let today = time::OffsetDateTime::now_utc().date();
+    let account = &tree_node.get_name();
+    let mut res = String::new();
+    
+    for (currency, number) in &tree_node.get_balance() {
+        res.push_str(&format!(
+            "{} balance {:<28} {:>15} {}\n",
+            today, account, number, currency
+        ));
+    }
+    
+    res
+}
 // }
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashMap;
+
     use super::*;
 
-    use crate::beans::{abc::{AAmount, Directive, Transaction}, flags::Flags};
+    use crate::{beans::{abc::{AAmount, Directive, Transaction}, flags::Flags}, core::tree::TreeNode};
 
     #[test]
     fn empty_list() {
@@ -93,7 +111,7 @@ mod tests {
 
     #[test]
     fn with_diff_balance() {
-        let entries = vec![Directive::Open, Directive::Balance(time::OffsetDateTime::now_utc().date(), "Checking".into(), Some(AAmount(100, "USD")))];
+        let entries = vec![Directive::Open, Directive::Balance(time::OffsetDateTime::now_utc().date(), "Checking".into(), Some(AAmount(100., "USD")))];
         
         assert_eq!(uptodate_status(&entries), Some(Status::Fail));
     }
@@ -106,14 +124,22 @@ mod tests {
             Directive::Close,                                          // Last valid
         ];
 
-        // Your original code: filter() removes unrealized, leaving [Open, Close]
-        // Then rev() gives [Close, Open], then last() gives Open
-        // So it returns Some(Directive::Open) - WRONG
-        
-        // Correct code should return Some(Directive::Close) - the last valid entry
         assert_eq!(get_last_entry(&entries), Some(&Directive::Close));
         assert_eq!(uptodate_status(&entries), None);
     }
 
-
+    #[test]
+    fn test_balance_string_single_currency() {
+        let mut balance = HashMap::new();
+        balance.insert("USD".to_string(), 1234.56);
+        
+        let tree_node = TreeNode("Assets:Cash".to_string(),
+            balance);
+        
+        let result = balance_string(&tree_node);
+        let today = time::OffsetDateTime::now_utc().date();
+        let expected = format!("{} balance Assets:Cash                          1234.56 USD\n", today);
+        
+        assert_eq!(result, expected);
+    }
 }

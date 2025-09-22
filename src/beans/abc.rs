@@ -4,7 +4,7 @@ use crate::beans::*;
 
 trait Amount {
     /// Number of units in the amount
-    fn get_value(&self) -> isize;
+    fn get_value(&self) -> f32;
     fn get_currency(&self) -> &'static str;
 }
 
@@ -15,10 +15,10 @@ trait Cost: Amount {
 }
 
 #[derive(Debug, PartialEq)]
-pub(crate) struct AAmount(pub isize, pub &'static str);
+pub(crate) struct AAmount(pub f32, pub &'static str);
 
 impl Amount for AAmount {
-    fn get_value(&self) -> isize {
+    fn get_value(&self) -> f32 {
         self.0
     }
 
