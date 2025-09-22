@@ -15,19 +15,23 @@ mod core;
 
 mod util {
     pub(crate) mod date {
+        use time::Month;
+
+        pub(crate) const END_OF_YEAR: FiscalYearEnd = FiscalYearEnd(Month::December, 31);
 
         /// Month and day that specify the end of the fiscal year
-        pub(crate) struct FiscalYearEnd(u8, u8);
+        #[derive(PartialEq)]
+        pub(crate) struct FiscalYearEnd(pub Month, pub u8);
 
         impl FiscalYearEnd {
             /// Actual month of the year
             fn month_of_year(&self) -> u8 {
-                (self.0 - 1) % 12 + 1
+                self.0.previous() as u8 % 12 + 1
             }
 
             /// Number of years that this is offset into the future
             fn year_offset(&self) -> u8 {
-                self.0 - 1 // 12
+                self.0.previous() as u8 // 12
             }
 
             /// Whether this fiscal year end supports fiscal quarters

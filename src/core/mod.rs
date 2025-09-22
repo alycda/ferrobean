@@ -1,4 +1,5 @@
 mod accounts;
+mod attributes;
 
 mod inventory {
     use std::collections::HashMap;
