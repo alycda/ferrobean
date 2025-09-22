@@ -81,7 +81,7 @@ pub(crate) struct Posting(Box<dyn Position>);
 
 /// cost and units
 trait Position {
-    fn get_units(&self) -> dyn Amount;
+    fn get_units(&self) -> Box<dyn Amount>;
     fn get_cost(&self) -> Option<Box<dyn Cost>>;
 }
 
