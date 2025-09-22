@@ -74,6 +74,9 @@ fn balance_string(tree_node: &super::tree::TreeNode) -> String {
 }
 // }
 
+/// Date and hash of the last entry for an account
+struct LastEntry(time::Date, String);
+
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
