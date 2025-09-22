@@ -77,6 +77,20 @@ fn balance_string(tree_node: &super::tree::TreeNode) -> String {
 /// Date and hash of the last entry for an account
 struct LastEntry(time::Date, String);
 
+/// Holds information about an account
+struct AccountData {
+    /// The date on which this account is closed 
+    close_date: Option<time::Date>,
+    // The metadata of the Open entry of this account
+    // meta: 
+    /// Uptodate status. Is only computed if the account has a "fava-uptodate-indication" meta attribute.
+    uptodate_status: Option<Status>,
+    /// Balance directive if this account has an uptodate status
+    balance_string: String,
+    /// The last entry of the account (unless it is a close Entry)
+    last_entry: Option<LastEntry>,
+}
+
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
