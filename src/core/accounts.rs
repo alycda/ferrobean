@@ -98,13 +98,6 @@ struct AccountData {
 #[derive(Default)]
 struct AccountDict(HashMap<String, AccountData>);
 
-// impl Default for AccountDict {
-//     /// Get the account of the given name, insert one if it is missing
-//     fn default() -> Self {
-//         Self(HashMap::new())
-//     }
-// }
-
 impl AccountDict {
     const EMPTY: AccountData = AccountData {
         close_date: None,
