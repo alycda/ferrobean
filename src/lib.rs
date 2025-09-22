@@ -1,6 +1,6 @@
 use worker::*;
 
-/// Exceptions 
+/// Exceptions
 ///
 /// see: https://github.com/beancount/fava/blob/main/src/fava/helpers.py
 #[derive(Debug, PartialEq)]
