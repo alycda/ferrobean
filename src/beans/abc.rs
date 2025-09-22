@@ -14,6 +14,21 @@ trait Cost: Amount {
     fn get_label(&self) -> Option<String>;
 }
 
+#[derive(Debug, PartialEq)]
+pub(crate) struct AAmount(pub isize, pub &'static str);
+
+impl Amount for AAmount {
+    fn get_value(&self) -> isize {
+        self.0
+    }
+
+    fn get_currency(&self) -> &'static str {
+        self.1
+    }
+}
+
+type DiffAmount = Option<AAmount>;
+
 /// an Entry, must have a Date
 /// 
 /// see https://beancount.github.io/docs/beancount_language_syntax.html#directives
@@ -28,8 +43,7 @@ pub(crate) enum Directive {
     
     // time::Date, Account, Meta(String)
     Note,
-    // time::Date, Account, Meta(Amount)
-    Balance,
+    Balance(time::Date, String, DiffAmount),
 
     Document,
     // Custom(Box<dyn Entry>),
