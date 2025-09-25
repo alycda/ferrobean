@@ -1,6 +1,6 @@
 //! Attributes for auto-completion
 
-use crate::{beans::abc::{Directive, Entry, Transaction}, util::date::{FiscalYearEnd, END_OF_YEAR}};
+use crate::{beans::abc::{Directive, Entry, Transaction}, util::date::{FiscalYearEnd, END_OF_YEAR}, LoadFile};
 
 /// Return active years, with support for fiscal years
 fn get_active_years(entries: Vec<Directive>, fye: FiscalYearEnd) -> Vec<String> {
@@ -49,11 +49,13 @@ fn get_active_years(entries: Vec<Directive>, fye: FiscalYearEnd) -> Vec<String> 
 #[derive(Default)]
 struct AttributesModule;
 
-impl AttributesModule {
-    fn load_file(&self) {
-
+impl LoadFile for AttributesModule {
+    fn load_file(&mut self) {
+        todo!()
     }
+}
 
+impl AttributesModule {
     fn payee_accounts(&self) -> Vec<String> {
         todo!()
     }

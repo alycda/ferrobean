@@ -52,6 +52,10 @@ mod util {
     }
 }
 
+trait LoadFile {
+    fn load_file(&mut self);
+}
+
 #[event(fetch)]
 async fn fetch(
     _req: Request,

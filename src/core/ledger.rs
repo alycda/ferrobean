@@ -1,12 +1,20 @@
 //! a Beancount ledger
 
-use crate::beans::abc::Directive;
+use std::path::PathBuf;
 
-struct FilteredLedger;
+use crate::{beans::abc::Directive, LoadFile};
+
+struct FilteredLedger(PathBuf);
+
+impl LoadFile for FavaLedger {
+    fn load_file(&mut self) {
+        todo!()
+    }
+}
 
 impl FilteredLedger {
-    fn new() -> Self {
-        todo!()
+    fn new(file_path: PathBuf) -> Self {
+        Self(file_path)
     }
 
     /// The date to use for prices
