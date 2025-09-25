@@ -1,4 +1,8 @@
+//! provides the data required by Fava's reports
+
 mod accounts;
+mod attributes;
+mod ledger;
 
 mod inventory {
     use std::collections::HashMap;

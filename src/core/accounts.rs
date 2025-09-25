@@ -1,8 +1,10 @@
-// struct Accounts;
+//! Account close date and metadata
 
 use std::collections::HashMap;
 
-use crate::beans::abc::Directive;
+use crate::{beans::abc::Directive, LoadFile};
+
+// struct Accounts;
 
 // impl Accounts {
 fn get_last_entry(postings: &Vec<Directive>) -> Option<&Directive> {
@@ -98,23 +100,7 @@ struct AccountData {
 #[derive(Default)]
 struct AccountDict(HashMap<String, AccountData>);
 
-impl AccountDict {
-    const EMPTY: AccountData = AccountData {
-        close_date: None,
-        // meta: HashMap::new(),  // This won't work with const - see below
-        uptodate_status: None,
-        balance_string: None,
-        last_entry: None,
-    };
-
-    fn get_or_empty(&self, key: &str) -> &AccountData {
-        self.0.get(key).unwrap_or(&Self::EMPTY)
-    }
-
-    fn get_or_insert(&mut self, key: String) -> &mut AccountData {
-        self.0.entry(key).or_insert_with(AccountData::default)
-    }
-
+impl LoadFile for AccountDict {
     fn load_file(&mut self) {
         self.0.clear();
 
@@ -158,6 +144,25 @@ impl AccountDict {
         // }
     }
 
+}
+
+impl AccountDict {
+    const EMPTY: AccountData = AccountData {
+        close_date: None,
+        // meta: HashMap::new(),  // This won't work with const - see below
+        uptodate_status: None,
+        balance_string: None,
+        last_entry: None,
+    };
+
+    fn get_or_empty(&self, key: &str) -> &AccountData {
+        self.0.get(key).unwrap_or(&Self::EMPTY)
+    }
+
+    fn get_or_insert(&mut self, key: String) -> &mut AccountData {
+        self.0.entry(key).or_insert_with(AccountData::default)
+    }
+
     fn all_balance_directives(&self) -> String {
         let mut result = String::new();
         for account_details in self.0.values() {
@@ -171,9 +176,9 @@ impl AccountDict {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
-
     use super::*;
+
+    use std::collections::HashMap;
 
     use crate::{beans::{abc::{AAmount, Directive, Transaction}, flags::Flags}, core::tree::TreeNode};
 
@@ -191,7 +196,7 @@ mod tests {
 
     #[test]
     fn with_unrealized() {
-        let entries = vec![Directive::Open, Directive::Transactions(Transaction(Flags::Unrealized))];
+        let entries = vec![Directive::Open, Directive::Transactions(Transaction(Flags::Unrealized, None))];
 
         assert_eq!(get_last_entry(&entries), Some(&Directive::Open));
         assert_eq!(uptodate_status(&entries), None);
@@ -215,7 +220,7 @@ mod tests {
     fn multiple_valid_entries() {
         let entries = vec![
             Directive::Open,                                           // First valid
-            Directive::Transactions(Transaction(Flags::Unrealized)),   // Unrealized (filtered out)
+            Directive::Transactions(Transaction(Flags::Unrealized, None)),   // Unrealized (filtered out)
             Directive::Close,                                          // Last valid
         ];
 

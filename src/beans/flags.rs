@@ -7,7 +7,7 @@ use crate::Helpers;
 /// see https://beancount.github.io/docs/beancount_design_doc.html#flag
 /// note: rust does not allow string literal discriminants in an enum: https://doc.rust-lang.org/reference/items/enumerations.html#r-items.enum.discriminant.repr-rust
 ///  but we CAN use [char](https://doc.rust-lang.org/std/primitive.char.html)s as [u8](https://doc.rust-lang.org/std/primitive.u8.html) bytes 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 #[repr(u8)]
 pub(crate) enum Flags {
     Conversion = b'C',

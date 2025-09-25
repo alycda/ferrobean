@@ -12,6 +12,11 @@ enum Helpers {
 
 mod beans;
 mod core;
+mod util;
+
+trait LoadFile {
+    fn load_file(&mut self);
+}
 
 #[event(fetch)]
 async fn fetch(
