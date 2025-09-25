@@ -196,7 +196,7 @@ mod tests {
 
     #[test]
     fn with_unrealized() {
-        let entries = vec![Directive::Open, Directive::Transactions(Transaction(Flags::Unrealized))];
+        let entries = vec![Directive::Open, Directive::Transactions(Transaction(Flags::Unrealized, None))];
 
         assert_eq!(get_last_entry(&entries), Some(&Directive::Open));
         assert_eq!(uptodate_status(&entries), None);
@@ -220,7 +220,7 @@ mod tests {
     fn multiple_valid_entries() {
         let entries = vec![
             Directive::Open,                                           // First valid
-            Directive::Transactions(Transaction(Flags::Unrealized)),   // Unrealized (filtered out)
+            Directive::Transactions(Transaction(Flags::Unrealized, None)),   // Unrealized (filtered out)
             Directive::Close,                                          // Last valid
         ];
 

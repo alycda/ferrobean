@@ -65,12 +65,36 @@ impl AttributesModule {
         s
     }
 
+    /// Return a list of all payee accounts (accounts that appear as payees in transactions)
     fn payee_accounts(&self) -> Vec<String> {
-        todo!()
+        // Placeholder: will be implemented to collect all unique payee accounts from transactions
+        let mut payees = std::collections::HashSet::new();
+        for entry in &self.0.all_entries {
+            if let Directive::Transactions(txn) = entry {
+                todo!("Extract payee from Transaction");
+                // if let Some(payee) = &txn.payee {
+                //     payees.insert(payee.clone());
+                // }
+            }
+        }
+        let mut payees: Vec<String> = payees.into_iter().collect();
+        payees.sort();
+        payees
     }
 
-    fn payee_transaction(&self) -> Option<Transaction> {
-        todo!()
+    /// Get the last transaction for a payee
+    fn payee_transaction(&self, payee: &str) -> Option<&Transaction> {
+        let mut result: Option<&Transaction> = None;
+        for entry in &self.0.all_entries {
+            if let Directive::Transactions(txn) = entry {
+                if let Some(txn_payee) = &txn.1 {
+                    if txn_payee == payee {
+                        result = Some(txn);
+                    }
+                }
+            }
+        }
+        result
     }
 }
 

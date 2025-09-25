@@ -34,20 +34,23 @@ type DiffAmount = Option<AAmount>;
 /// see https://beancount.github.io/docs/beancount_language_syntax.html#directives
 #[derive(Debug, PartialEq)]
 pub(crate) enum Directive {
-    // time::Date, Account
-    Open,
+    Balance(time::Date, String, DiffAmount),
+    /// This is a Custom type
+    Budget,
     // time::Date, Account
     Close,
     Commodity,
-    Transactions(Transaction), // , Posting
-    
+    // Custom(Box<dyn Entry>),
+    Document,
+    Event,
     // time::Date, Account, Meta(String)
     Note,
-    Balance(time::Date, String, DiffAmount),
-
-    Document,
-    // Custom(Box<dyn Entry>),
-    Budget,
+    // time::Date, Account
+    Open,
+    Pad,
+    Price,
+    Query,
+    Transactions(Transaction), // , Posting
 }
 
 impl Entry for Directive {
@@ -68,8 +71,10 @@ pub(crate) trait Entry: PartialEq + std::fmt::Debug {
     }
 }
 
-#[derive(Debug, PartialEq)]
-pub(crate) struct Transaction(pub flags::Flags);
+type Payee = String;
+
+#[derive(Debug, PartialEq, Clone)]
+pub(crate) struct Transaction(pub flags::Flags, pub Option<Payee>);
 
 impl Transaction {
     pub fn is_unrealized(&self) -> bool {
