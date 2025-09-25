@@ -65,10 +65,6 @@ impl FavaLedger {
         default
     }
 
-    fn load_file() {
-
-    }
-
     fn get_filtered(&self) -> FilteredLedger {
         todo!()
     }
