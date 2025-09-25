@@ -1,9 +1,9 @@
 //! Attributes for auto-completion
 
-use crate::{beans::abc::{Directive, Entry, Transaction}, util::date::{FiscalYearEnd, END_OF_YEAR}, LoadFile};
+use crate::{beans::abc::{Directive, Entry, Transaction}, core::ledger::FavaLedger, util::date::{FiscalYearEnd, END_OF_YEAR}, LoadFile};
 
 /// Return active years, with support for fiscal years
-fn get_active_years(entries: Vec<Directive>, fye: FiscalYearEnd) -> Vec<String> {
+fn get_active_years(entries: &Vec<Directive>, fye: FiscalYearEnd) -> Vec<String> {
     let mut years = Vec::new();
     
     if fye == END_OF_YEAR {
@@ -47,15 +47,24 @@ fn get_active_years(entries: Vec<Directive>, fye: FiscalYearEnd) -> Vec<String> 
 
 /// Some attributes of the ledger (mostly for auto-completion)
 #[derive(Default)]
-struct AttributesModule;
+struct AttributesModule(FavaLedger, Vec<String>);
 
 impl LoadFile for AttributesModule {
     fn load_file(&mut self) {
-        todo!()
+        let all_entries = &self.0.all_entries;
+
+        self.1 = get_active_years(all_entries, END_OF_YEAR);
     }
 }
 
 impl AttributesModule {
+    fn new(ledger: FavaLedger) -> Self {
+        let mut s = Self(ledger, Vec::new());
+        s.load_file();
+
+        s
+    }
+
     fn payee_accounts(&self) -> Vec<String> {
         todo!()
     }

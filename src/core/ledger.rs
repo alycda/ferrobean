@@ -2,7 +2,7 @@
 
 use std::path::PathBuf;
 
-use crate::{beans::{abc::Directive, BeancountOptions}, Helpers, LoadFile};
+use crate::{beans::{abc::Directive, BeancountOptions}, LoadFile};
 
 struct FilteredLedger(PathBuf);
 
@@ -42,9 +42,9 @@ impl FilteredLedger {
 
 /// an interface for a Beancount ledger
 #[derive(Default)]
-struct FavaLedger {
+pub(crate) struct FavaLedger {
     beancount_file_path: PathBuf,
-    all_entries: Vec<Directive>,
+    pub all_entries: Vec<Directive>,
     /// should limit to Helpers::BeancountError
     errors: Vec<String>,
     option: BeancountOptions,
