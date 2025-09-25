@@ -12,6 +12,7 @@ enum Helpers {
 
 mod beans;
 mod core;
+mod util;
 
 #[event(fetch)]
 async fn fetch(
