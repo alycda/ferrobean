@@ -1,2 +1,2 @@
 pub(crate) mod date;
-mod ranking;
+pub(crate) mod ranking;
