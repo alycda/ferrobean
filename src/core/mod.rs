@@ -1,3 +1,5 @@
+//! provides the data required by Fava's reports
+
 mod accounts;
 mod attributes;
 mod ledger;
