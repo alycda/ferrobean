@@ -2,15 +2,9 @@
 
 use std::path::PathBuf;
 
-use crate::{beans::abc::Directive, LoadFile};
+use crate::{beans::{abc::Directive, BeancountOptions}, Helpers, LoadFile};
 
 struct FilteredLedger(PathBuf);
-
-impl LoadFile for FavaLedger {
-    fn load_file(&mut self) {
-        todo!()
-    }
-}
 
 impl FilteredLedger {
     fn new(file_path: PathBuf) -> Self {
@@ -47,13 +41,28 @@ impl FilteredLedger {
 }
 
 /// an interface for a Beancount ledger
+#[derive(Default)]
 struct FavaLedger {
+    beancount_file_path: PathBuf,
+    all_entries: Vec<Directive>,
+    /// should limit to Helpers::BeancountError
+    errors: Vec<String>,
+    option: BeancountOptions,
+}
 
+impl LoadFile for FavaLedger {
+    fn load_file(&mut self) {
+        todo!()
+    }
 }
 
 impl FavaLedger {
-    fn new() -> Self {
-        todo!()
+    fn new(beancount_file_path: PathBuf) -> Self {
+        let mut default = Self::default();
+
+        default.beancount_file_path = beancount_file_path;
+
+        default
     }
 
     fn load_file() {
