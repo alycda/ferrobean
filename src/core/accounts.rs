@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use crate::beans::abc::Directive;
+use crate::{beans::abc::Directive, LoadFile};
 
 // struct Accounts;
 
@@ -100,23 +100,7 @@ struct AccountData {
 #[derive(Default)]
 struct AccountDict(HashMap<String, AccountData>);
 
-impl AccountDict {
-    const EMPTY: AccountData = AccountData {
-        close_date: None,
-        // meta: HashMap::new(),  // This won't work with const - see below
-        uptodate_status: None,
-        balance_string: None,
-        last_entry: None,
-    };
-
-    fn get_or_empty(&self, key: &str) -> &AccountData {
-        self.0.get(key).unwrap_or(&Self::EMPTY)
-    }
-
-    fn get_or_insert(&mut self, key: String) -> &mut AccountData {
-        self.0.entry(key).or_insert_with(AccountData::default)
-    }
-
+impl LoadFile for AccountDict {
     fn load_file(&mut self) {
         self.0.clear();
 
@@ -158,6 +142,25 @@ impl AccountDict {
         // for close_entry in &self.ledger.all_entries_by_type.close {
         //     self.get_or_insert(close_entry.account.clone()).close_date = Some(close_entry.date);
         // }
+    }
+
+}
+
+impl AccountDict {
+    const EMPTY: AccountData = AccountData {
+        close_date: None,
+        // meta: HashMap::new(),  // This won't work with const - see below
+        uptodate_status: None,
+        balance_string: None,
+        last_entry: None,
+    };
+
+    fn get_or_empty(&self, key: &str) -> &AccountData {
+        self.0.get(key).unwrap_or(&Self::EMPTY)
+    }
+
+    fn get_or_insert(&mut self, key: String) -> &mut AccountData {
+        self.0.entry(key).or_insert_with(AccountData::default)
     }
 
     fn all_balance_directives(&self) -> String {
