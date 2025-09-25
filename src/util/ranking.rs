@@ -90,13 +90,23 @@ impl ExponentialDecayRanker {
     /// * `date` - The date on which the item has been liked.
     pub fn update(&mut self, item: &str, date: Date) {
         let score = self.get(item);
-        let time = date.to_julian_day() as f64;
+        // Convert to ordinal day count to match Python's date.toordinal()
+        // Python's toordinal() counts days since January 1, year 1
+        let time = self.date_to_ordinal(date) as f64;
         let higher = score.max(time * self.rate);
         let lower = score.min(time * self.rate);
         self.scores.insert(
             item.to_string(),
             higher + (lower - higher).exp().ln_1p(),
         );
+    }
+
+    /// Convert a Date to ordinal days (matching Python's date.toordinal())
+    fn date_to_ordinal(&self, date: Date) -> i32 {
+        // Python's date.toordinal() returns days since January 1, year 1
+        // We'll use a simplified calculation that should be consistent
+        let base_date = time::Date::from_calendar_date(1, time::Month::January, 1).unwrap();
+        (date - base_date).whole_days() as i32 + 1
     }
 
     /// Get the current score for an item, or zero.
@@ -187,5 +197,130 @@ mod tests {
         let date = date!(2023-01-01);
         ranker.update("item1", date);
         assert!(ranker.get("item1") > 0.0);
+    }
+
+    #[test]
+    fn test_ranker() {
+        // Test 1: Different dates, most recent should be first
+        let list = vec!["1".to_string(), "2".to_string(), "3".to_string()];
+        let mut ranker = ExponentialDecayRanker::new_with_list(list);
+        
+        ranker.update("1", date!(2015-01-01));
+        ranker.update("2", date!(2014-01-01));
+        ranker.update("3", date!(2016-01-01));
+        
+        assert_eq!(ranker.sort(), vec!["3", "1", "2"]);
+
+        // Test 2: Multiple updates, more recent date wins
+        let list = vec!["1".to_string(), "2".to_string()];
+        let mut ranker = ExponentialDecayRanker::new_with_list(list);
+        
+        ranker.update("2", date!(2016-01-01));
+        ranker.update("2", date!(2016-01-01));
+        ranker.update("1", date!(2016-01-01));
+        ranker.update("1", date!(2016-01-02));  // One day later
+        
+        assert_eq!(ranker.sort(), vec!["1", "2"]);
+
+        // Test 3: Frequency vs recency - recency wins with significant time gap
+        let list = vec!["1".to_string(), "2".to_string()];
+        let mut ranker = ExponentialDecayRanker::new_with_list(list);
+        
+        ranker.update("2", date!(2015-01-01));
+        ranker.update("2", date!(2015-01-01));  // Two updates but older
+        ranker.update("1", date!(2016-01-01));  // One update but much newer
+        
+        assert_eq!(ranker.sort(), vec!["1", "2"]);
+
+        // Test 4: Frequency vs recency - frequency wins with small time gap
+        let list = vec!["1".to_string(), "2".to_string()];
+        let mut ranker = ExponentialDecayRanker::new_with_list(list);
+        
+        ranker.update("2", date!(2015-01-01));
+        ranker.update("2", date!(2015-01-02));  // Two updates close together
+        ranker.update("1", date!(2016-01-01));  // One update but newer
+        
+        // Note: This test demonstrates that with the exponential decay algorithm,
+        // multiple close updates can outweigh a single newer update depending on
+        // the decay rate and time differences
+        assert_eq!(ranker.sort(), vec!["2", "1"]);
+    }
+
+    #[test]
+    fn test_ranker_without_predefined_list() {
+        // Test with no predefined list - should rank all items that have been updated
+        let mut ranker = ExponentialDecayRanker::new();
+        
+        ranker.update("apple", date!(2015-01-01));
+        ranker.update("banana", date!(2016-01-01));
+        ranker.update("cherry", date!(2014-01-01));
+        
+        let sorted = ranker.sort();
+        assert_eq!(sorted[0], "banana");  // Most recent
+        assert_eq!(sorted[1], "apple");
+        assert_eq!(sorted[2], "cherry");  // Oldest
+    }
+
+    #[test] 
+    fn test_ranker_get_scores() {
+        let mut ranker = ExponentialDecayRanker::new();
+        
+        // Test getting score for non-existent item
+        assert_eq!(ranker.get("nonexistent"), 0.0);
+        
+        // Test getting score after update
+        ranker.update("item1", date!(2023-01-01));
+        assert!(ranker.get("item1") > 0.0);
+        
+        // Test that more recent dates have higher scores
+        ranker.update("item2", date!(2023-06-01));
+        assert!(ranker.get("item2") > ranker.get("item1"));
+    }
+
+    #[test]
+    fn test_ranker_with_custom_rate() {
+        // Test with custom decay rate
+        let mut fast_decay_ranker = ExponentialDecayRanker::new_with_rate(1.0);
+        let mut slow_decay_ranker = ExponentialDecayRanker::new_with_rate(0.001);
+        
+        let old_date = date!(2020-01-01);
+        let new_date = date!(2023-01-01);
+        
+        fast_decay_ranker.update("item", old_date);
+        slow_decay_ranker.update("item", old_date);
+        
+        // With fast decay, old dates should lose value quickly
+        // With slow decay, old dates should retain more value
+        let fast_decay_score = fast_decay_ranker.get("item");
+        let slow_decay_score = slow_decay_ranker.get("item");
+        
+        // The exact relationship depends on the implementation details,
+        // but this tests that different rates produce different results
+        assert_ne!(fast_decay_score, slow_decay_score);
+    }
+
+    #[test]
+    fn test_sort_with_scores() {
+        let mut ranker = ExponentialDecayRanker::new();
+        
+        ranker.update("first", date!(2023-03-01));
+        ranker.update("second", date!(2023-02-01));
+        ranker.update("third", date!(2023-01-01));
+        
+        let scored_items = ranker.sort_with_scores();
+        
+        // Should be sorted by score descending
+        assert_eq!(scored_items[0].0, "first");
+        assert_eq!(scored_items[1].0, "second");
+        assert_eq!(scored_items[2].0, "third");
+        
+        // Scores should be in descending order
+        assert!(scored_items[0].1 > scored_items[1].1);
+        assert!(scored_items[1].1 > scored_items[2].1);
+        
+        // All scores should be positive
+        for (_, score) in scored_items {
+            assert!(score > 0.0);
+        }
     }
 }
